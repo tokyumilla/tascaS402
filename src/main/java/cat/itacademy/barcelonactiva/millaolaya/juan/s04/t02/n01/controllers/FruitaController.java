@@ -5,22 +5,20 @@ import cat.itacademy.barcelonactiva.millaolaya.juan.s04.t02.n01.model.repository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
 @CrossOrigin(origins = "http:localhost:8080")
-@RestController("/fruita")
+@RestController
+@RequestMapping("/fruita")
 public class FruitaController {
 
     @Autowired
     FruitaRepository fruitaRepository;
 
-    @GetMapping("getAll")
+    @GetMapping("/getAll")
     public ResponseEntity <List<Fruita>> getAllFruites (){
         try {
             List<Fruita> fruites = fruitaRepository.findAll();
@@ -45,6 +43,42 @@ public class FruitaController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @PostMapping("/add")
+    public ResponseEntity<Fruita> addFruita (@RequestBody Fruita fruita) {
+        try{
+            Fruita _fruita = fruitaRepository.save(new Fruita(fruita.getNom(), fruita.getQuantitatQuilos()));
+            return new ResponseEntity<>(_fruita, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Fruita> updateFruita(@PathVariable("id") int id, @RequestBody Fruita fruita) {
+        Optional<Fruita> fruitaData = fruitaRepository.findById(id);
+
+        if (fruitaData.isPresent()) {
+            Fruita _fruita = fruitaData.get();
+            _fruita.setNom((fruita.getNom()));
+            _fruita.setQuantitatQuilos((fruita.getQuantitatQuilos()));
+            return new ResponseEntity<>(fruitaRepository.save(_fruita),HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<HttpStatus> deleteFruita (@PathVariable("id") int id) {
+        try {
+            fruitaRepository.deleteById(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 
 
 

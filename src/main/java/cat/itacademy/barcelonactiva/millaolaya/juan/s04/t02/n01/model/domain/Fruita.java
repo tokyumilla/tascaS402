@@ -18,8 +18,8 @@ public class Fruita {
 
     public Fruita() {}
 
-    public Fruita(int id, String nom, int quantitatQuilos) {
-        this.id = id;
+    public Fruita(String nom, int quantitatQuilos) {
+
         this.nom = nom;
         this.quantitatQuilos = quantitatQuilos;
     }
@@ -28,9 +28,6 @@ public class Fruita {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getNom() {
         return nom;
