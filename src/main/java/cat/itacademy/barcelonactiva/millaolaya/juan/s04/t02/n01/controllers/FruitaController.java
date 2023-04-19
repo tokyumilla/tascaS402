@@ -1,7 +1,7 @@
 package cat.itacademy.barcelonactiva.millaolaya.juan.s04.t02.n01.controllers;
 
 import cat.itacademy.barcelonactiva.millaolaya.juan.s04.t02.n01.model.domain.Fruita;
-import cat.itacademy.barcelonactiva.millaolaya.juan.s04.t02.n01.model.repository.FruitaRepository;
+import cat.itacademy.barcelonactiva.millaolaya.juan.s04.t02.n01.model.services.FruitaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,12 +16,12 @@ import java.util.Optional;
 public class FruitaController {
 
     @Autowired
-    FruitaRepository fruitaRepository;
+    private FruitaService fruitaService;
 
     @GetMapping("/getAll")
     public ResponseEntity <List<Fruita>> getAllFruites (){
         try {
-            List<Fruita> fruites = fruitaRepository.findAll();
+            List<Fruita> fruites = fruitaService.findAll();
 
             if (fruites.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -35,7 +35,7 @@ public class FruitaController {
 
     @GetMapping("/getOne/{id}")
     public ResponseEntity<Fruita> getOne (@PathVariable("id") int id) {
-        Optional<Fruita> fruitaData = fruitaRepository.findById(id);
+        Optional<Fruita> fruitaData = fruitaService.findById(id);
 
         if (fruitaData.isPresent()) {
             return new ResponseEntity<>(fruitaData.get(), HttpStatus.OK);
@@ -47,7 +47,7 @@ public class FruitaController {
     @PostMapping("/add")
     public ResponseEntity<Fruita> addFruita (@RequestBody Fruita fruita) {
         try{
-            Fruita _fruita = fruitaRepository.save(new Fruita(fruita.getNom(), fruita.getQuantitatQuilos()));
+            Fruita _fruita = fruitaService.save(new Fruita(fruita.getNom(), fruita.getQuantitatQuilos()));
             return new ResponseEntity<>(_fruita, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -56,13 +56,13 @@ public class FruitaController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<Fruita> updateFruita(@PathVariable("id") int id, @RequestBody Fruita fruita) {
-        Optional<Fruita> fruitaData = fruitaRepository.findById(id);
+        Optional<Fruita> fruitaData = fruitaService.findById(id);
 
         if (fruitaData.isPresent()) {
             Fruita _fruita = fruitaData.get();
             _fruita.setNom((fruita.getNom()));
             _fruita.setQuantitatQuilos((fruita.getQuantitatQuilos()));
-            return new ResponseEntity<>(fruitaRepository.save(_fruita),HttpStatus.OK);
+            return new ResponseEntity<>(fruitaService.save(_fruita),HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -71,7 +71,7 @@ public class FruitaController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<HttpStatus> deleteFruita (@PathVariable("id") int id) {
         try {
-            fruitaRepository.deleteById(id);
+            fruitaService.deleteById(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
